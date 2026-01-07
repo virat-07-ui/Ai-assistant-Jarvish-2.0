@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JARVISH – Iron Man HUD</title>
+
+<!-- ========== STYLES ========== -->
+<style>
+:root{
+  --cyan:#00eaff;
+  --cyan-soft:#7ff6ff;
+  --glass: rgba(10,30,40,.45);
+  --glass-border: rgba(0,234,255,.25);
+  --bg:#050b0f;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:radial-gradient(1200px 800px at 50% 40%, #0a1b22 0%, var(--bg) 60%);
+  color:var(--cyan); font-family:Segoe UI,Arial,sans-serif; overflow:hidden;
+}
+
+/* HUD GRID */
+.grid{
+  position:fixed; inset:0; pointer-events:none;
+  background:
+    linear-gradient(rgba(0,234,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,234,255,.06) 1px, transparent 1px);
+  background-size:40px 40px;
+  mask-image: radial-gradient(circle at 50% 45%, black 0%, transparent 65%);
+}
+
+/* TOP BAR */
+.top{
+  position:fixed; left:0; right:0; top:0; padding:10px 14px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.brand{letter-spacing:.2em; font-weight:700}
+.status{opacity:.9}
+
+/* PANELS */
+.panel{
+  position:fixed; top:80px; width:280px; padding:12px;
+  background:linear-gradient(180deg, rgba(10,40,55,.6), rgba(10,20,30,.35));
+  border:1px solid var(--glass-border);
+  backdrop-filter: blur(6px);
+  box-shadow:0 0 25px rgba(0,234,255,.15);
+}
+.left{left:14px}
+.right{right:14px}
+.panel h3{margin:0 0 8px 0; font-size:12px; letter-spacing:.15em}
+.kv{display:flex; justify-content:space-between; font-size:13px; opacity:.95}
+.log{font-size:12px; opacity:.85; max-height:180px; overflow:auto}
+.log div{margin-bottom:6px}
+
+/* CENTER CORE */
+.center{
+  position:fixed; left:50%; top:52%; transform:translate(-50%,-50%);
+  width:360px; height:360px; pointer-events:none;
+}
+.core{
+  position:absolute; inset:80px; border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 50%, #cfffff 0%, #6ff 18%, #00cfe6 35%, rgba(0,234,255,.25) 55%, transparent 60%);
+  filter: drop-shadow(0 0 30px rgba(0,234,255,.9));
+  animation:pulse 2.4s ease-in-out infinite;
+}
+.ring{
+  position:absolute; inset:0; border-radius:50%;
+  border:2px solid rgba(0,234,255,.35);
+  filter: drop-shadow(0 0 12px rgba(0,234,255,.6));
+  animation:spin 14s linear infinite;
+}
+.ring.r2{inset:22px; opacity:.7; animation-duration:22s}
+.ring.r3{inset:44px; opacity:.5; animation-duration:34s}
+.scan{
+  position:absolute; inset:0; border-radius:50%;
+  background:conic-gradient(from 0deg, transparent 0 75%, rgba(0,234,255,.45) 80%, transparent 85% 100%);
+  animation:scan 2.2s linear infinite;
+  opacity:.0;
+}
+
+/* STATES */
+.state{
+  position:fixed; left:50%; top:70%;
+  transform:translateX(-50%);
+  letter-spacing:.25em; font-size:12px; opacity:.85;
+}
+
+/* CONTROLS */
+.controls{
+  position:fixed; left:50%; bottom:12px; transform:translateX(-50%);
+  display:flex; gap:8px; align-items:center;
+  background:linear-gradient(180deg, rgba(10,40,55,.55), rgba(10,20,30,.35));
+  border:1px solid var(--glass-border);
+  backdrop-filter: blur(6px);
+  padding:8px 10px;
+}
+button,input,select{
+  background:#0b1f28; color:var(--cyan);
+  border:1px solid var(--glass-border); border-radius:6px;
+}
+button{padding:8px 10px; cursor:pointer}
+input{padding:8px; width:220px}
+select{padding:8px}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes scan{to{transform:rotate(360deg)}}
+@keyframes pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+}
+
+/* MOBILE */
+@media(max-width:900px){
+  .panel{width:220px}
+  .center{width:300px;height:300px}
+  input{width:160px}
+}
+</style>
+</head>
+
+<body>
+<div class="grid"></div>
+
+<div class="top">
+  <div class="brand">J A R V I S H</div>
+  <div class="status" id="sys">SYSTEM ONLINE</div>
+</div>
+
+<div class="panel left">
+  <h3>STATUS</h3>
+  <div class="kv"><span>Time</span><b id="time"></b></div>
+  <div class="kv"><span>Date</span><b id="date"></b></div>
+  <div class="kv"><span>Mode</span><b id="mode">FRIENDLY</b></div>
+</div>
+
+<div class="panel right">
+  <h3>RECENT COMMANDS</h3>
+  <div class="log" id="log"></div>
+</div>
+
+<div class="center">
+  <div class="ring r1"></div>
+  <div class="ring r2"></div>
+  <div class="ring r3"></div>
+  <div class="scan" id="scan"></div>
+  <div class="core" id="core"></div>
+</div>
+
+<div class="state" id="state">IDLE</div>
+
+<div class="controls">
+  <button id="voiceBtn">🔊 Voice</button>
+  <button id="micBtn">🎤 Speak</button>
+  <select id="modeSel">
+    <option>FRIENDLY</option>
+    <option>STUDY</option>
+    <option>GAMING</option>
+  </select>
+  <input id="txt" placeholder="Type command…"/>
+  <button id="send">SEND</button>
+</div>
+
+<!-- ========== SCRIPT ========== -->
+<script>
+/* ===== CLOCK ===== */
+setInterval(()=>{
+  time.textContent=new Date().toLocaleTimeString();
+  date.textContent=new Date().toLocaleDateString();
+},500);
+
+/* ===== UI HELPERS ===== */
+const logBox = document.getElementById('log');
+function logCmd(t){
+  const d=document.createElement('div');
+  d.textContent="• "+t;
+  logBox.prepend(d);
+}
+function setState(s){
+  state.textContent=s;
+  scan.style.opacity = (s!=="IDLE")? .6 : 0;
+}
+
+/* ===== VOICE ===== */
+let voiceOn=false;
+voiceBtn.onclick=()=>{
+  voiceOn=true;
+  speak("Jarvish online. At your service.");
+};
+function speak(t){
+  if(!voiceOn) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);
+  u.lang="en-IN";
+  speechSynthesis.speak(u);
+}
+
+/* ===== MODES ===== */
+modeSel.onchange=()=>{
+  mode.textContent=modeSel.value;
+  speak("Mode set to "+modeSel.value);
+};
+
+/* ===== SPEECH RECOGNITION ===== */
+let rec;
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(SR){
+  rec=new SR(); rec.lang="en-IN";
+  rec.onresult=e=>{
+    const t=e.results[0][0].transcript;
+    handle(t);
+  };
+}
+micBtn.onclick=()=>{ setState("LISTENING"); rec && rec.start(); };
+
+/* ===== COMMAND BRAIN ===== */
+function handle(text){
+  setState("ANALYZING");
+  logCmd(text);
+  let t=text.toLowerCase(), r="Acknowledged.";
+  setTimeout(()=>{
+    setState("EXECUTING");
+    if(t.includes("time")) r="Current time is "+new Date().toLocaleTimeString();
+    else if(t.includes("date")) r="Today is "+new Date().toLocaleDateString();
+    else if(t.includes("open youtube")){ r="Opening YouTube"; window.open("https://youtube.com","_blank"); }
+    else if(t.includes("open google")){ r="Opening Google"; window.open("https://google.com","_blank"); }
+        else if(t.includes("system status")) r="All systems are fully operational.";
+else if(t.includes("scan system")) r="Initiating full system scan.";
+else if(t.includes("clear screen")){ logBox.innerHTML=""; r="Display cleared."; }
+else if(t.includes("fullscreen")){ document.documentElement.requestFullscreen(); r="Fullscreen mode enabled."; }
+else if(t.includes("exit fullscreen")){ document.exitFullscreen(); r="Exiting fullscreen."; }
+else if(t.includes("reload system")){ r="Reloading system."; location.reload(); }
+else if(t.includes("battery level")) r="Battery access is limited in browser.";
+else if(t.includes("network status")) r=navigator.onLine?"You are online.":"Network disconnected.";
+else if(t.includes("who am i")) r="You are the authorized user.";
+else if(t.includes("version")) r="Jarvish HUD version one point zero.";
+    else if(t.includes("open github")){ r="Opening GitHub"; window.open("https://github.com","_blank"); }
+else if(t.includes("open stackoverflow")){ r="Opening Stack Overflow"; window.open("https://stackoverflow.com","_blank"); }
+else if(t.includes("open wikipedia")){ r="Opening Wikipedia"; window.open("https://wikipedia.org","_blank"); }
+else if(t.includes("open chatgpt")){ r="Opening ChatGPT"; window.open("https://chat.openai.com","_blank"); }
+else if(t.includes("open linkedin")){ r="Opening LinkedIn"; window.open("https://linkedin.com","_blank"); }
+else if(t.includes("open spotify")){ r="Opening Spotify"; window.open("https://open.spotify.com","_blank"); }
+else if(t.includes("open netflix")){ r="Opening Netflix"; window.open("https://netflix.com","_blank"); }
+else if(t.includes("open hotstar")){ r="Opening Hotstar"; window.open("https://www.hotstar.com","_blank"); }
+else if(t.includes("open telegram")){ r="Opening Telegram"; window.open("https://web.telegram.org","_blank"); }
+else if(t.includes("open discord")){ r="Opening Discord"; window.open("https://discord.com/app","_blank"); }
+    else if(t.includes("how are you")) r="All systems running at optimal performance.";
+else if(t.includes("are you real")) r="As real as a digital intelligence can be.";
+else if(t.includes("who made you")) r="I was created by my developer, inspired by Iron Man.";
+else if(t.includes("tell a joke")) r="Why do programmers love dark mode? Because light attracts bugs.";
+else if(t.includes("activate defense mode")) r="Defense mode is fictional, but I am alert.";
+else if(t.includes("go sleep")) r="Entering standby mode. Call me anytime.";
+else if(t.includes("wake up")) r="Jarvish online and ready.";
+else if(t.includes("i am bored")) r="May I suggest music, a game, or learning something new?";
+else if(t.includes("motivate me")) r="Success comes to those who never quit. You are capable.";
+else if(t.includes("thank you jarvish")) r="Always at your service, sir.";
+    else if(t.includes("open reddit")){ r="Opening Reddit"; window.open("https://www.reddit.com","_blank"); }
+else if(t.includes("open quora")){ r="Opening Quora"; window.open("https://www.quora.com","_blank"); }
+else if(t.includes("open threads")){ r="Opening Threads"; window.open("https://www.threads.net","_blank"); }
+else if(t.includes("open signal")){ r="Opening Signal"; window.open("https://signal.org","_blank"); }
+else if(t.includes("open skype")){ r="Opening Skype"; window.open("https://www.skype.com","_blank"); }
+    else if(t.includes("open byjus")){ r="Opening Byjus"; window.open("https://byjus.com","_blank"); }
+else if(t.includes("open unacademy")){ r="Opening Unacademy"; window.open("https://unacademy.com","_blank"); }
+else if(t.includes("open coursera")){ r="Opening Coursera"; window.open("https://www.coursera.org","_blank"); }
+else if(t.includes("open udemy")){ r="Opening Udemy"; window.open("https://www.udemy.com","_blank"); }
+else if(t.includes("open khan academy")){ r="Opening Khan Academy"; window.open("https://www.khanacademy.org","_blank"); }
+    else if(t.includes("open meesho")){ r="Opening Meesho"; window.open("https://www.meesho.com","_blank"); }
+else if(t.includes("open myntra")){ r="Opening Myntra"; window.open("https://www.myntra.com","_blank"); }
+else if(t.includes("open ajio")){ r="Opening Ajio"; window.open("https://www.ajio.com","_blank"); }
+else if(t.includes("open snapdeal")){ r="Opening Snapdeal"; window.open("https://www.snapdeal.com","_blank"); }
+else if(t.includes("open bigbasket")){ r="Opening BigBasket"; window.open("https://www.bigbasket.com","_blank"); }
+    else if(t.includes("open steam")){ r="Opening Steam"; window.open("https://store.steampowered.com","_blank"); }
+else if(t.includes("open epic games")){ r="Opening Epic Games"; window.open("https://www.epicgames.com","_blank"); }
+else if(t.includes("open playstation")){ r="Opening PlayStation"; window.open("https://www.playstation.com","_blank"); }
+else if(t.includes("open twitch")){ r="Opening Twitch"; window.open("https://www.twitch.tv","_blank"); }
+else if(t.includes("open crunchyroll")){ r="Opening Crunchyroll"; window.open("https://www.crunchyroll.com","_blank"); }
+    else if(t.includes("hello")||t.includes("hey jarvish")) r="Yes sir?";
+    speak(r);
+    setTimeout(()=>setState("IDLE"),700);
+  },600);
+}
+
+/* ===== TEXT INPUT ===== */
+send.onclick=()=>{ if(txt.value) handle(txt.value), txt.value=""; };
+</script>
+</body>
+</html>
