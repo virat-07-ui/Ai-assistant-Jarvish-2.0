@@ -657,6 +657,10 @@ else if(t.includes("did you know")) r="A day on Venus is longer than a year on V
 else if(t.includes("i need motivation")) 
     r = "Remember: small steps every day lead to big results. You got this!";
     else if(t.includes("hello")||t.includes("hey jarvish")) r="Yes sir?";
+   else {
+  askAI(text);
+  return;
+  }
     speak(r);
     setTimeout(()=>setState("IDLE"),700);
   },600);
