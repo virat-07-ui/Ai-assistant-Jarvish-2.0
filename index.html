@@ -668,6 +668,26 @@ else if(t.includes("i need motivation"))
 
 /* ===== TEXT INPUT ===== */
 send.onclick=()=>{ if(txt.value) handle(txt.value), txt.value=""; };
+// ===== AI BACKEND CALL =====
+async function askAI(text){
+  setState("THINKING");
+
+  try{
+    const res = await fetch("https://jarvish-ai-server.onrender.com/ai", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text })
+    });
+const data = await res.json();
+    const reply = data.reply || "No response from AI";
+  speak(reply);
+    logCmd("AI: " + reply);
+  }catch(e){
+    speak("AI service error");
+    console.error(e);
+  }
+  setTimeout(()=>setState("IDLE"),700);
+  }
 </script>
 </body>
 </html>
