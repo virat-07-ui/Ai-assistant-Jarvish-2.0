@@ -192,11 +192,26 @@ voiceBtn.onclick=()=>{
 };
 function speak(t){
   if(!voiceOn) return;
+
   speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(t);
-  u.lang="en-IN";
+
+  const u = new SpeechSynthesisUtterance(t);
+  const voices = speechSynthesis.getVoices();
+
+  // 💖 Hindi cute girl voice
+  u.voice =
+    voices.find(v => v.name.includes("Google हिन्दी")) ||
+    voices.find(v => v.lang === "hi-IN") ||
+    voices.find(v => v.name.includes("Female")) ||
+    voices[0];
+
+  u.lang = "hi-IN";   // Hindi
+  u.rate = 0.9;      // slow = cute
+  u.pitch = 1.3;     // girl tone
+  u.volume = 1;
+
   speechSynthesis.speak(u);
-}
+  }
 
 /* ===== MODES ===== */
 modeSel.onchange=()=>{
