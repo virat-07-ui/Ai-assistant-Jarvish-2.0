@@ -230,7 +230,19 @@ if(SR){
   };
 }
 micBtn.onclick=()=>{ setState("LISTENING"); rec && rec.start(); };
+// ===============================
+// JARVISH MAIN ENTRY FUNCTION
+// ===============================
+function handle(text){
+  text = text.toLowerCase();
+  logCmd(text);
 
+  if (isCommand(text)) {
+    handleCommandFlow(text);
+  } else {
+    handleChatFlow(text);
+  }
+  }
 /* ===== COMMAND BRAIN ===== */
 function handle(text){
   setState("ANALYZING");
