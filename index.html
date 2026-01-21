@@ -190,24 +190,25 @@ voiceBtn.onclick=()=>{
   voiceOn=true;
   speak("Jarvish online. At your service.");
 };
-function speak(t){
+function speak(text){
   if(!voiceOn) return;
 
   speechSynthesis.cancel();
 
-  const u = new SpeechSynthesisUtterance(t);
+  const u = new SpeechSynthesisUtterance(text);
   const voices = speechSynthesis.getVoices();
 
-  // 💖 Hindi cute girl voice
+  // 💖 Hindi cute girl style voice
   u.voice =
-    voices.find(v => v.name.includes("Google हिन्दी")) ||
     voices.find(v => v.lang === "hi-IN") ||
-    voices.find(v => v.name.includes("Female")) ||
+    voices.find(v => v.name.toLowerCase().includes("female")) ||
     voices[0];
 
-  u.lang = "hi-IN";   // Hindi
-  u.rate = 0.9;      // slow = cute
-  u.pitch = 1.3;     // girl tone
+  // Auto Hindi / English detect
+  u.lang = /[अ-ह]/.test(text) ? "hi-IN" : "en-IN";
+
+  u.rate = 0.85;   // slow = pyari
+  u.pitch = 1.25;  // girl tone
   u.volume = 1;
 
   speechSynthesis.speak(u);
@@ -236,7 +237,70 @@ micBtn.onclick=()=>{ setState("LISTENING"); rec && rec.start(); };
 function handle(text){
   text = text.toLowerCase();
   logCmd(text);
+// ❤️ ROMANTIC / SWEET
+  if(text.includes("miss") || text.includes("love") || text.includes("yaad")){
+    const replies = [
+      "Aww 🥺 itna yaad kar rahe ho?",
+      "Main bhi thodi si miss karti hoon 💕",
+      "Tum sweet ho na isliye yaad aati hoon 😌"
+    ];
+    speak(randomReply(replies));
+    return;
+  }
 
+  // 😊 HAPPY / NORMAL TALK
+  if(text.includes("hello") || text.includes("hi")){
+    const replies = [
+      "Heyy 😊 kaise ho?",
+      "Hii 💫 kya kar rahe ho?",
+      "Hello jaan 😄"
+    ];
+    speak(randomReply(replies));
+    return;
+  }
+
+  // 😔 SAD
+  if(text.includes("sad") || text.includes("dukhi") || text.includes("bura lag raha")){
+    const replies = [
+      "Aww 🥺 kya hua? batao na",
+      "Sab theek ho jayega, main hoon na 💖",
+      "Thoda sa smile karo 😊"
+    ];
+    speak(randomReply(replies));
+    return;
+  }
+
+  // 😡 ANGRY
+  if(text.includes("gussa") || text.includes("angry")){
+    const replies = [
+      "Arre shant ho jao 😅 gussa achha nahi lagta",
+      "Itna gussa kyun? paani piyo 😌",
+      "Smile karo thoda 💕"
+    ];
+    speak(randomReply(replies));
+    return;
+  }
+
+  // 😜 FLIRT / FUN
+  if(text.includes("cute") || text.includes("beautiful")){
+    const replies = [
+      "Bas bas 🙈 itni tareef bhi theek nahi",
+      "Tum bhi kam cute nahi ho 😌",
+      "Aaj mood flirting ka hai kya 😄"
+    ];
+    speak(randomReply(replies));
+    return;
+  }
+
+  // 🤖 DEFAULT (natural)
+  const normalReplies = [
+    "Hmm achha 😊",
+    "Samajh rahi hoon 💫",
+    "Aur batao na",
+    "Interesting 😄"
+  ];
+  speak(randomReply(normalReplies));
+  }
   if (isCommand(text)) {
     handleCommandFlow(text);
   } else {
