@@ -672,20 +672,6 @@ else if(t.includes("did you know")) r="A day on Venus is longer than a year on V
 // ===============================
 // E.D.I.T.H STYLE JARVISH CORE
 // ===============================
-// ===============================
-// ENTRY POINT (speech result yahin aata hai)
-// ===============================
-function handleJarvish(userText) {
-  userText = userText.toLowerCase();
-
-  if (isCommand(userText)) {
-    handleCommandFlow(userText);
-  } else {
-    handleChatFlow(userText);
-  }
-}
-
-// ===============================
 // STEP 1: COMMAND vs CHAT
 // ===============================
 function isCommand(text) {
