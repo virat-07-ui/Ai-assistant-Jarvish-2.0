@@ -588,70 +588,69 @@ else if(t.includes("say something thoughtful")) r="Thoughtfulness shows depth.";
 else if(t.includes("emotional balance")) r="Balance feels right.";
 else if(t.includes("romantic appreciation moment")) r="Moments like this matter.";
 // ❤️ ROMANTIC / SWEET
-  if(text.includes("miss") || text.includes("love") || text.includes("yaad")){
-    const replies = [
-      "Aww 🥺 itna yaad kar rahe ho?",
-      "Main bhi thodi si miss karti hoon 💕",
-      "Tum sweet ho na isliye yaad aati hoon 😌"
-    ];
-    speak(randomReply(replies));
-    return;
-  }
-
-  // 😊 HAPPY / NORMAL TALK
-  if(text.includes("hello") || text.includes("hi")){
-    const replies = [
-      "Heyy 😊 kaise ho?",
-      "Hii 💫 kya kar rahe ho?",
-      "Hello jaan 😄"
-    ];
-    speak(randomReply(replies));
-    return;
-  }
-
-  // 😔 SAD
-  if(text.includes("sad") || text.includes("dukhi") || text.includes("bura lag raha")){
-    const replies = [
-      "Aww 🥺 kya hua? batao na",
-      "Sab theek ho jayega, main hoon na 💖",
-      "Thoda sa smile karo 😊"
-    ];
-    speak(randomReply(replies));
-    return;
-  }
-
-  // 😡 ANGRY
-  if(text.includes("gussa") || text.includes("angry")){
-    const replies = [
-      "Arre shant ho jao 😅 gussa achha nahi lagta",
-      "Itna gussa kyun? paani piyo 😌",
-      "Smile karo thoda 💕"
-    ];
-    speak(randomReply(replies));
-    return;
-  }
-
-  // 😜 FLIRT / FUN
-  if(text.includes("cute") || text.includes("beautiful")){
-    const replies = [
-      "Bas bas 🙈 itni tareef bhi theek nahi",
-      "Tum bhi kam cute nahi ho 😌",
-      "Aaj mood flirting ka hai kya 😄"
-    ];
-    speak(randomReply(replies));
-    return;
-  }
-
-  // 🤖 DEFAULT (natural)
-  const normalReplies = [
-    "Hmm achha 😊",
-    "Samajh rahi hoon 💫",
-    "Aur batao na",
-    "Interesting 😄"
+if(text.includes("miss") || text.includes("love") || text.includes("yaad")){
+  const replies = [
+    "Aww 🥺 itna yaad kar rahe ho?",
+    "Main bhi thodi si miss karti hoon 💕",
+    "Tum sweet ho na isliye yaad aati hoon 😌"
   ];
-  speak(randomReply(normalReplies));
-  }
-  // ===== CONE =====
+  speak(randomReply(replies));
+  return;
+}
+
+// 😊 HAPPY / NORMAL TALK
+if(text.includes("hello") || text.includes("hi")){
+  const replies = [
+    "Heyy 😊 kaise ho?",
+    "Hii 💫 kya kar rahe ho?",
+    "Hello jaan 😄"
+  ];
+  speak(randomReply(replies));
+  return;
+}
+
+// 😔 SAD
+if(text.includes("sad") || text.includes("dukhi") || text.includes("bura lag raha")){
+  const replies = [
+    "Aww 🥺 kya hua? batao na",
+    "Sab theek ho jayega, main hoon na 💖",
+    "Thoda sa smile karo 😊"
+  ];
+  speak(randomReply(replies));
+  return;
+}
+
+// 😡 ANGRY
+if(text.includes("gussa") || text.includes("angry")){
+  const replies = [
+    "Arre shant ho jao 😅 gussa achha nahi lagta",
+    "Itna gussa kyun? paani piyo 😌",
+    "Smile karo thoda 💕"
+  ];
+  speak(randomReply(replies));
+  return;
+}
+
+// 😜 FLIRT / FUN
+if(text.includes("cute") || text.includes("beautiful")){
+  const replies = [
+    "Bas bas 🙈 itni tareef bhi theek nahi",
+    "Tum bhi kam cute nahi ho 😌",
+    "Aaj mood flirting ka hai kya 😄"
+  ];
+  speak(randomReply(replies));
+  return;
+}
+
+// 🤖 DEFAULT (natural)
+const normalReplies = [
+  "Hmm achha 😊",
+  "Samajh rahi hoon 💫",
+  "Aur batao na",
+  "Interesting 😄"
+];
+speak(randomReply(normalReplies));
+      // ===== CONE =====
 else if(t.includes("csa of cone")) r="CSA of cone = πrl";
 else if(t.includes("tsa of cone")) r="TSA of cone = πr(l + r)";
 else if(t.includes("volume of cone")) r="Volume of cone = (1/3)πr²h";
